@@ -85,7 +85,54 @@
 
 <script>
 export default {
-    name: 'City'
+    name: 'City',
+    mounted() {
+        this.axios.get('/api/cityList').then((res)=>{
+            var msg = res.data.msg;
+            if(msg === 'ok') {
+                var cities = res.data.data.cities;
+                this.formatCityList(cities)
+            }
+        })
+    },
+    methods: {
+        formatCityList(cities){
+            var cityList = [];
+            var hotList  = [];
+
+            for(var i=0;i<cities.length;i++) {
+                var firstLetter = cities[i].py.substring(0,1).toUpperCase();
+                if(tocom(firstLetter)){
+                    cityList.push({index: firstLetter, list: [{nm: cities[i].nm, id: cities[i].id}]})
+                }else {
+                   for(var j=1;j<cityList.length;j++){
+                       if(cityList[j].index === firstLetter) {
+                           cityList[j].list.push({nm: cities[i].nm, id: cities[i].id})
+                       }
+                   }
+                }
+
+            }
+            cityList.sort((n1,n2)=>{
+                if(n1.index > n2.index){
+                    return 1;
+                }else if(n1.index < n2.index){
+                    return -1;
+                }else{
+                    return 0;
+                }
+            })
+            function tocom(firstLetter){
+                for(var i=0;i<cityList.length;i++){
+                    if( cityList[i].index === firstLetter) {
+                         return false;
+                    }
+                }
+                return true;
+            }
+            console.log( cityList)
+        }
+    }
 }
 </script>
 
