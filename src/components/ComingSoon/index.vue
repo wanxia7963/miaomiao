@@ -1,6 +1,7 @@
 <template>
     <div class="movie_body">
-        <Scroller>
+        <loading v-if="isloading" />
+        <Scroller v-else>
             <ul>
                 <li v-for="item in comingList" :key="item.id">
                     <div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
@@ -24,14 +25,23 @@ export default {
     name: 'CommingSoon',
     data() {
         return {
-            comingList: []
+            comingList: [],
+            isloading: true,
+            preCityId: -1
         }
     },
-    mounted() {
-        this.axios.get('/api/movieComingList?cityId=10').then(res=>{
+    activated() {
+
+
+        var cityId = this.$store.state.city.id;
+        if( this.preCityId === cityId) return;
+        this.isLoading = true;
+        this.axios.get('/api/movieComingList?cityId=' + cityId).then(res=>{
             var msg = res.data.msg;
             if(msg ==='ok'){
                 this.comingList = res.data.data.comingList;
+                this.isloading = false;
+                this.preCityId = cityId;
             }
         })
     },

@@ -30,15 +30,21 @@ export default {
         return {
             movieList: [],
             pullDownMsg: '',
-            isLoading: true
+            isLoading: true,
+            preCityId: -1
         }
     },
-    mounted() {
-        this.axios.get('/api/movieOnInfoList?cityId=10').then((res)=>{
+    activated() {
+
+        var cityId = this.$store.state.city.id;
+        if( this.preCityId === cityId) return;
+        this.isLoading = true;
+        this.axios.get('/api/movieOnInfoList?cityId=' + cityId).then((res)=>{
             var msg = res.data.msg;
             if(msg === 'ok') {
                 this.movieList = res.data.data.movieList;
                 this.isLoading = false;
+                this.preCityId = cityId;
             }
         })
     },
